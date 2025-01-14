@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { setUser, clearUser } from './features/userSlice';
+import { RootState } from './store';
 
-function App() {
-  const [count, setCount] = useState(0)
+
+const App = () => {
+  const dispatch = useDispatch();
+
+  // Get the user from the Redux state
+  const user = useSelector((state: RootState) => state.user.user);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(
+          setUser({ uid: user.uid, email: user.email, displayName: user.displayName })
+        );
+      } else {
+        dispatch(clearUser());
+      }
+    });
+
+    return unsubscribe;
+  }, [dispatch]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+    <div style={{ padding: '1em' }}>
+      <h1>Welcome to Firebase with Redux!</h1>
+      {user ? (
+      <p>
+        Logged in as: {user.displayName} ({user.email})
       </p>
-    </>
-  )
-}
+      ) : (
+      <p>You are not logged in.</p>
+      )}
+    </div>
+  );
+};
 
-export default App
+export default App;
