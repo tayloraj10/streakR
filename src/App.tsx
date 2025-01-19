@@ -2,13 +2,17 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { setUser, clearUser } from './features/userSlice';
+import { setUser, clearUser } from './slices/userSlice';
 import { RootState } from './store';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import LoginPage from './pages/login';
+import MainPage from './pages/main';
 
 
 const App = () => {
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
   // Get the user from the Redux state
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -26,17 +30,19 @@ const App = () => {
     return unsubscribe;
   }, [dispatch]);
 
+  useEffect(() => {
+    if (user) {
+      navigate('/'); // Redirect to home if signed in
+    } else {
+      navigate('/login'); // Redirect to login if not signed in
+    }
+  }, [user, navigate]);
+
   return (
-    <div style={{ padding: '1em' }}>
-      <h1>Welcome to Firebase with Redux!</h1>
-      {user ? (
-      <p>
-        Logged in as: {user.displayName} ({user.email})
-      </p>
-      ) : (
-      <p>You are not logged in.</p>
-      )}
-    </div>
+    <Routes>
+      <Route path="/" element={<MainPage />} />
+      <Route path="/login" element={<LoginPage />} />
+    </Routes>
   );
 };
 
