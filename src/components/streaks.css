@@ -1,0 +1,9 @@
+.streak-container {
+    margin: 2em;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2em;
+  }

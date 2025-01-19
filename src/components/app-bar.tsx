@@ -23,6 +23,7 @@ const MyAppBar: React.FC = () => {
             console.log('User logged out');
             navigate('/');
         } catch (error) {
+            console.error(error)
         }
     };
 
@@ -41,7 +42,7 @@ const MyAppBar: React.FC = () => {
                     </IconButton>
                     <Box sx={{ flexGrow: 1 }} />
                     <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
-                        StreakR
+                        Streak<span style={{ color: 'secondary' }}>R</span>
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     {user && (
