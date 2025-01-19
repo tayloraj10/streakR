@@ -3,6 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { useNavigate } from 'react-router-dom';
 import "./login-form.css"
+import Button from '@mui/material/Button';
 
 
 const LoginForm = () => {
@@ -21,8 +22,17 @@ const LoginForm = () => {
         }
     };
 
+    const loginTest = async () => {
+        try {
+            await firebase.auth().signInWithEmailAndPassword('tayloraj10@gmail.com', '123456');
+        } catch (error) {
+            setError((error as any).message);
+        }
+    }
+
     return (
         <div className="login-container">
+            <Button variant='contained' onClick={loginTest}><strong>Login as Test User</strong></Button>
             <h1>Login</h1>
             <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
                 <div>

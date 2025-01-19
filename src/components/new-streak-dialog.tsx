@@ -14,10 +14,11 @@ import CustomSnackbar from './snackbar';
 
 interface NewStreakDialogProps {
     open: boolean;
+    selectedDate: Date | null;
     handleClose: () => void;
 }
 
-const NewStreakDialog: React.FC<NewStreakDialogProps> = ({ open, handleClose }) => {
+const NewStreakDialog: React.FC<NewStreakDialogProps> = ({ open, selectedDate, handleClose }) => {
     const user = useSelector((state: RootState) => state.user.user);
     const [name, setName] = useState('');
     const [category, setCategory] = useState('');
@@ -39,7 +40,7 @@ const NewStreakDialog: React.FC<NewStreakDialogProps> = ({ open, handleClose }) 
                     name: name,
                     category: category,
                     uid: user?.uid,
-                    dateCreated: new Date(),
+                    dateCreated: selectedDate,
                     submissions: [],
                 });
                 handleClose();

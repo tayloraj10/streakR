@@ -5,11 +5,17 @@
 .title-row {
     display: flex;
     align-items: center;
-    margin-bottom: 2em;
+    margin-bottom: 3em;
 }
 
 .streak-name-row {
     display: flex;
     align-items: center;
-    margin-bottom: 2em;
+    margin-bottom: 3em;
+}
+
+.date-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

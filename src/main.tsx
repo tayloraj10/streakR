@@ -23,7 +23,7 @@ const theme = createTheme({
       main: '#ff9800', // Orange
     },
     info: {
-      main: '#2196f3', // Light Blue
+      main: '#9e9e9e', // Grey
     },
     success: {
       main: '#4caf50', // Green
