@@ -12,12 +12,13 @@ export interface Streak {
     name: string;
     submissions: StreakSubmission[];
     category: string;
+    dateCreated: Date;
 }
 
 export interface StreakSubmission {
     id: string;
     streakId: string;
-    date: Date;
+    dateCreated: Date;
 }
 
 // Define the initial state

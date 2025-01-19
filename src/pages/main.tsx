@@ -3,10 +3,11 @@ import React from 'react';
 import "./main.css"
 import MyAppBar from '../components/app-bar';
 import { useEffect, useState } from 'react';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
 import 'firebase/compat/auth';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import { Streak } from '../slices/streakSlice';
 import Streaks from '../components/streaks';
 
 const db = getFirestore();
@@ -16,18 +17,18 @@ const MainPage: React.FC = () => {
     const user = useSelector((state: RootState) => state.user.user);
 
     useEffect(() => {
-        const fetchData = async () => {
-            console.log(user?.uid)
-            const querySnapshot = await getDocs(collection(db, 'streaks'));
-            const dataList = querySnapshot.docs
-                .map(doc => doc.data())
-                .filter(doc => doc.uid === user!.uid);
-            setData(dataList);
-            console.log(dataList);
-        };
+        if (user) {
+            const q = query(collection(db, 'streaks'), where('uid', '==', user.uid));
 
-        fetchData();
-    }, []);
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const dataList = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Streak));
+                setData(dataList);
+                console.log(dataList);
+            });
+
+            return () => unsubscribe();  // Clean up the listener
+        }
+    }, [user]);
 
     return (
         <div className='container'>

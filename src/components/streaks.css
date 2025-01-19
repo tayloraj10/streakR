@@ -6,4 +6,10 @@
     display: flex;
     align-items: center;
     margin-bottom: 2em;
-  }
+}
+
+.streak-name-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2em;
+}
