@@ -47,7 +47,7 @@ const LoginForm = () => {
                 </div>
                 <button type="submit">Login</button>
             </form>
-            {error && <p>{error}</p>}
+            {error && <p>Invalid Login</p>}
         </div>
     );
 };
