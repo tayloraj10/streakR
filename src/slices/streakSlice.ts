@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Timestamp } from 'firebase/firestore';
 
 // Define the shape of the user state
 export interface StreaksState {
@@ -17,8 +18,7 @@ export interface Streak {
 
 export interface StreakSubmission {
     id: string;
-    streakId: string;
-    dateCreated: Date;
+    dateCreated: Timestamp;
 }
 
 // Define the initial state

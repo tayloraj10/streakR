@@ -10,11 +10,14 @@ interface DatePickerProps {
 const CustomDatePicker: React.FC<DatePickerProps> = ({ selectedDate, handleChange }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker className='date-picker'
+            <DatePicker
+                className='date-picker'
                 label="Select a Date"
                 value={selectedDate}
                 onChange={(newDate: Date | null) => handleChange(newDate)}
+                format="MM/dd/yy" // Change date format
                 sx={{
+                    width: '8em', // Change width to 100%
                     '& .MuiInputLabel-root': {
                         color: 'white', // Change label color to white
                     },

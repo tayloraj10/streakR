@@ -1,8 +1,6 @@
 import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import firebase from 'firebase/compat/app';
@@ -31,7 +29,7 @@ const MyAppBar: React.FC = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton
+                    {/* <IconButton
                         size="large"
                         edge="start"
                         color="inherit"
@@ -39,8 +37,8 @@ const MyAppBar: React.FC = () => {
                         sx={{ mr: 2 }}
                     >
                         <MenuIcon />
-                    </IconButton>
-                    <Box sx={{ flexGrow: 1 }} />
+                    </IconButton> */}
+                    {/* <Box sx={{ flexGrow: 1 }} /> */}
                     <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
                         Streak<span style={{ color: 'secondary' }}>R</span>
                     </Typography>

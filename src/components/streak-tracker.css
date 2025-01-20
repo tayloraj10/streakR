@@ -1,3 +1,4 @@
 .streak-tracker-container {
     display: flex;
+    overflow: auto;
 }

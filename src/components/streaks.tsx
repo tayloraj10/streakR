@@ -1,5 +1,5 @@
 import React from 'react';
-import { Streak } from '../slices/streakSlice';
+import { Streak, StreakSubmission } from '../slices/streakSlice';
 import './streaks.css';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -7,12 +7,12 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NewStreakDialog from './new-streak-dialog';
 import { db } from '../firebase';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, getDoc, updateDoc } from 'firebase/firestore';
 import StreakTracker from './streak-tracker';
 import CheckIcon from '@mui/icons-material/Check';
 import CustomDatePicker from './date-picker';
 import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
+import { Button, Card, CardContent } from '@mui/material';
 
 
 interface StreaksProps {
@@ -37,8 +37,56 @@ const Streaks: React.FC<StreaksProps> = ({ streaks }) => {
         }
     };
 
+    const checkIfSubmissionExists = (submissions: any[], date: Date | null) => {
+        return submissions.some(submission => submission.dateCreated.toDate().toDateString() === date!.toDateString());
+    }
+
+    const handleNewSubmission = async (streakID: string, dateCreated: Date | null) => {
+        const newSubmission = {
+            id: crypto.randomUUID(),
+            dateCreated: dateCreated,
+        };
+        try {
+            const streakRef = doc(db, 'streaks', streakID);
+            const streakDoc = await getDoc(streakRef);
+            if (streakDoc.exists()) {
+                const streakData = streakDoc.data();
+                const updatedSubmissions = [...streakData.submissions, newSubmission];
+                await updateDoc(streakRef, { submissions: updatedSubmissions });
+                console.log('Submission appended to streak with id: ', streakID);
+            } else {
+                console.error('No such document!');
+            }
+        } catch (error) {
+            console.error('Error appending submission: ', error);
+        }
+    };
+
+    const removeSubmission = async (submissionData: StreakSubmission[], streakID: string) => {
+        const submission = submissionData.find(submission => submission.dateCreated.toDate().toDateString() === selectedDate!.toDateString());
+        console.log(submission);
+        if (submission) {
+            try {
+                console.log(submission.id);
+                const streakRef = doc(db, 'streaks', streakID);
+                const streakDoc = await getDoc(streakRef);
+                if (streakDoc.exists()) {
+                    const streakData = streakDoc.data();
+                    const updatedSubmissions = streakData.submissions.filter((currentSubmission: StreakSubmission) => currentSubmission.id !== submission.id);
+                    console.log(updatedSubmissions);
+                    await updateDoc(streakRef, { submissions: updatedSubmissions });
+                    console.log('Submission removed from streak with id: ', submission.id);
+                } else {
+                    console.error('No such document!');
+                }
+            } catch (error) {
+                console.error('Error removing submission: ', error);
+            }
+        }
+    }
+
     return (
-        <div className='streak-container'>
+        <div className='streak-main-container'>
             <div className='title-row' >
                 <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', marginRight: '.5em' }}>
                     Your Streaks
@@ -61,26 +109,45 @@ const Streaks: React.FC<StreaksProps> = ({ streaks }) => {
                 {open && <NewStreakDialog open={open} selectedDate={selectedDate} handleClose={handleClose} />}
 
             </div>
-            {streaks.map((streak) => (
-                <><div key={streak.id} className='streak-name-row'>
-                    <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', marginRight: '.5em' }}>
-                        {streak.name}
-                    </Typography>
-                    <IconButton
-                        aria-label="add streak"
-                        onClick={() => console.log('Add new streak')}
-                        sx={{
-                            border: '2px solid',
-                            borderColor: 'info.main',
-                            borderRadius: '50%'
-                        }}
-                    >
-                        <CheckIcon color='info' />
-                    </IconButton>
-                    <IconButton color="error" aria-label="add streak" onClick={() => handleDeleteStreak(streak.id)}>
-                        <DeleteIcon />
-                    </IconButton>
-                </div><StreakTracker submissions={streak.submissions} /></>
+
+            {streaks.map((streak, index) => (
+                <Box key={streak.id} sx={{ marginBottom: '1em' }}>
+                    <Card variant="outlined" sx={{ backgroundColor: 'primary.light' }}>
+                        <CardContent>
+                            <div className='streak-name-row'>
+                                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', marginRight: '.5em', color: 'white' }}>
+                                    {streak.name}
+                                </Typography>
+                                <IconButton
+                                    aria-label="add streak"
+                                    onClick={() => checkIfSubmissionExists(streaks[index].submissions, selectedDate) ? removeSubmission(streaks[index].submissions, streak.id) : handleNewSubmission(streaks[index].id, selectedDate)}
+                                    sx={{
+                                        border: '2px solid',
+                                        borderColor: checkIfSubmissionExists(streak.submissions, selectedDate) ? 'success.main' : 'warning.main',
+                                        borderRadius: '50%',
+                                        backgroundColor: checkIfSubmissionExists(streak.submissions, selectedDate) ? 'success.main' : 'transparent',
+                                        '&:hover': {
+                                            backgroundColor: 'success.main',
+                                            borderColor: 'success.main',
+                                            '& .MuiSvgIcon-root': {
+                                                color: 'white',
+                                            }
+                                        },
+                                        '& .MuiSvgIcon-root': {
+                                            color: checkIfSubmissionExists(streak.submissions, selectedDate) ? 'white' : 'warning',
+                                        }
+                                    }}
+                                >
+                                    <CheckIcon color={checkIfSubmissionExists(streak.submissions, selectedDate) ? 'success' : 'warning'} />
+                                </IconButton>
+                                <IconButton color="error" aria-label="delete streak" onClick={() => handleDeleteStreak(streak.id)}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </div>
+                            <StreakTracker submissions={streak.submissions} />
+                        </CardContent>
+                    </Card>
+                </Box>
             ))}
         </div>
     );
