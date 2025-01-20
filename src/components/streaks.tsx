@@ -13,6 +13,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CustomDatePicker from './date-picker';
 import Box from '@mui/material/Box';
 import { Button, Card, CardContent } from '@mui/material';
+import { FaFire } from "react-icons/fa";
 
 
 interface StreaksProps {
@@ -85,6 +86,21 @@ const Streaks: React.FC<StreaksProps> = ({ streaks }) => {
         }
     }
 
+    const calculateCurrentStreak = (submissions: StreakSubmission[]) => {
+        let currentStreak = 0;
+        let streakStartDate = new Date();
+        const sortedSubmissions = submissions.sort((a, b) => b.dateCreated.toDate().getTime() - a.dateCreated.toDate().getTime());
+        sortedSubmissions.forEach((submission, index) => {
+            if (index === 0 || submission.dateCreated.toDate().getDate() === streakStartDate.getDate() - 1) {
+                currentStreak++;
+                streakStartDate = submission.dateCreated.toDate();
+            } else {
+                return;
+            }
+        });
+        return currentStreak;
+    }
+
     return (
         <div className='streak-main-container'>
             <div className='title-row' >
@@ -143,6 +159,13 @@ const Streaks: React.FC<StreaksProps> = ({ streaks }) => {
                                 <IconButton color="error" aria-label="delete streak" onClick={() => handleDeleteStreak(streak.id)}>
                                     <DeleteIcon />
                                 </IconButton>
+                                {calculateCurrentStreak(streak.submissions) > 0 &&
+                                    <div className='streak-details' style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography variant="h6" component="div" sx={{ color: 'white', fontWeight: 'bold', marginRight: '0.2em' }}>
+                                            {calculateCurrentStreak(streak.submissions)}
+                                        </Typography>
+                                        <FaFire className='fire-icon' style={{ fontSize: '1.2em' }} />
+                                    </div>}
                             </div>
                             <StreakTracker submissions={streak.submissions} />
                         </CardContent>

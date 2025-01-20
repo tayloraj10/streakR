@@ -1,3 +1,7 @@
+:root {
+    --warning-color: #FFA500;
+}
+
 .streak-main-container {
     margin: 2em;
 }
@@ -23,4 +27,12 @@
 .streak-container {
     margin-bottom: 3em;
     padding: 1em;
+}
+
+.streak-details {
+    margin-left: 1em;
+}
+
+.fire-icon {
+    color: var(--warning-color);
 }
